@@ -92,6 +92,39 @@ body{
 .st .go{flex:none;text-align:right}
 .st .go .dm{font-size:10.5px;color:#b8b8b2;letter-spacing:.04em;font-family:ui-monospace,Menlo,monospace}
 .st .go .ar{display:block;text-align:right;font-size:15px;color:var(--c);margin-top:2px}
+
+/* ---------- 搜索 ---------- */
+.sbar{display:flex;align-items:center;gap:10px;margin:26px auto 0;max-width:480px;
+  background:#fff;border:1.5px solid #17171A;border-radius:999px;padding:0 16px;height:48px;
+  transition:box-shadow .2s}
+.sbar:focus-within{box-shadow:0 4px 0 rgba(23,23,26,.9)}
+.sbar .sicon{flex:none;font-size:15px;color:#17171A;opacity:.55}
+.sbar input{flex:1;min-width:0;border:0;outline:none;background:transparent;
+  font-size:16px;font-family:inherit;color:#17171A;letter-spacing:.02em}
+.sbar input::placeholder{color:#b9b9b3;letter-spacing:.1em}
+.sclear{flex:none;border:0;background:#efefe9;color:#17171A;width:26px;height:26px;border-radius:50%;
+  font-size:12px;cursor:pointer;display:none;line-height:1}
+.sclear.show{display:block}
+.sbar input[type=search]::-webkit-search-cancel-button,.sbar input[type=search]::-webkit-search-decoration{-webkit-appearance:none;appearance:none}
+#sres{display:none}
+#sres.show{display:block}
+#sres .scount{margin:30px 2px 4px;font-size:12px;color:#8b8b86;letter-spacing:.18em}
+#sres .scount b{color:#17171A}
+.sr{display:flex;align-items:center;gap:14px;padding:15px 2px;border-bottom:1px solid #ecece6;
+  text-decoration:none;color:inherit}
+.sr:active{background:#f3f3ee}
+.sr .dot{width:8px;height:8px;border-radius:50%;flex:none}
+.sr .tx{flex:1;min-width:0}
+.sr .fl{display:block;font-size:10.5px;letter-spacing:.2em;margin-bottom:3px;font-weight:700}
+.sr .nm{display:block;font-size:15.5px;font-weight:700;letter-spacing:.02em}
+.sr .nm mark{background:rgba(23,23,26,.12);color:inherit;border-radius:3px;padding:0 1px}
+.sr .ds{display:block;font-size:12.5px;color:#8f8f89;margin-top:3px;line-height:1.5;
+  white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.sr .go{flex:none;text-align:right}
+.sr .go .ar{font-size:15px;color:#9a9a95}
+.sr .go .ar{color:var(--c,#17171A)}
+.snone{text-align:center;padding:46px 0 10px;color:#b3b3ad;font-size:13px;letter-spacing:.15em;line-height:2.2}
+.snone b{color:#17171A;font-size:15px;letter-spacing:.05em;display:block}
 .catfoot{margin-top:44px;text-align:center;color:#c2c2bc;font-size:11.5px;letter-spacing:.22em}
 </style>
 </head>
@@ -105,6 +138,12 @@ body{
     <div class="sub">把做过的 <b id="tot">…</b> 个网站，分进五栋楼</div>
     <div style="margin-top:10px" id="pins"></div>
   </div>
+  <div class="sbar">
+    <span class="sicon">&#9906;</span>
+    <input id="sinput" type="search" placeholder="搜一个站：钢琴、帕梅拉、庄子…" autocomplete="off" autocapitalize="off" enterkeyhint="search" aria-label="搜索全部网站">
+    <button class="sclear" id="sclear" aria-label="清空搜索">&#10005;</button>
+  </div>
+  <div id="sres"></div>
   <!-- 楼由 JS 注入 -->
   <div id="blocks"></div>
   <div class="hint">↑ ↓ 漫步 · 点楼进入</div>
@@ -341,6 +380,50 @@ window.addEventListener('hashchange',()=>{
   if(MAP.some(m=>m.id===id)&&cur!==id)openCat(id);
   else if(!location.hash)closeCat();
 });
+
+// ---------- 搜索 ----------
+const sinput=document.getElementById('sinput'), sclear=document.getElementById('sclear'), sres=document.getElementById('sres');
+let stimer=null;
+function esc(s){return s.replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]))}
+function hi(text,q){
+  const i=text.toLowerCase().indexOf(q);
+  if(i<0)return esc(text);
+  return esc(text.slice(0,i))+'<mark>'+esc(text.slice(i,i+q.length))+'</mark>'+esc(text.slice(i+q.length));
+}
+function doSearch(){
+  const q=sinput.value.trim().toLowerCase();
+  sclear.classList.toggle('show', !!q);
+  if(!q){
+    sres.classList.remove('show'); sres.innerHTML='';
+    document.getElementById('blocks').style.display='';
+    document.querySelector('.hint').style.display='';
+    return;
+  }
+  const hits=[];
+  MAP.forEach(m=>m.groups.forEach(g=>g.items.forEach(it=>{
+    if((it.n+' '+it.d+' '+g.g+' '+m.name).toLowerCase().includes(q))
+      hits.push({m,g,it});
+  })));
+  document.getElementById('blocks').style.display='none';
+  document.querySelector('.hint').style.display='none';
+  if(!hits.length){
+    sres.innerHTML='<div class="snone"><b>没有找到「'+esc(sinput.value.trim())+'」</b>试试：钢琴 · 帕梅拉 · 庄子 · 追剧 · 手账 · 冥想</div>';
+  } else {
+    const floors=[...new Set(hits.map(x=>x.m.name))].join(' · ');
+    sres.innerHTML=
+      '<div class="scount">找到 <b>'+hits.length+'</b> 个 · '+esc(floors)+'</div>'+
+      hits.map(x=>
+        '<a class="sr" style="--c:'+x.m.color+'" href="'+x.it.u+'" target="_blank" rel="noopener">'+
+        '<span class="dot" style="background:'+x.m.color+'"></span>'+
+        '<span class="tx"><span class="fl" style="color:'+x.m.color+'">'+esc(x.m.name)+' · '+esc(x.g.g)+'</span>'+
+        '<span class="nm">'+hi(x.it.n,q)+'</span><span class="ds">'+esc(x.it.d)+'</span></span>'+
+        '<span class="go"><span class="ar">&#8599;</span></span></a>').join('');
+  }
+  sres.classList.add('show');
+}
+sinput.addEventListener('input',()=>{clearTimeout(stimer);stimer=setTimeout(doSearch,110)});
+sclear.addEventListener('click',()=>{sinput.value='';doSearch();sinput.focus()});
+sinput.addEventListener('keydown',e=>{if(e.key==='Enter'){e.preventDefault();sinput.blur();}});
 if(location.hash){const id=location.hash.slice(1);if(MAP.some(m=>m.id===id))setTimeout(()=>openCat(id),120);}
 
 </script>
