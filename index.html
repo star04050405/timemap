@@ -37,6 +37,14 @@ body{
 .bld.in{opacity:1;transform:translateY(0)}
 .bld:active{transform:scale(.975)}
 .bld img{width:100%;height:auto;display:block;pointer-events:none}
+#blocks{margin-top:40px}
+.bld{position:relative}
+.bld .tag{position:absolute;top:2.5%;left:50%;transform:translateX(-50%);z-index:2;
+  white-space:nowrap;background:rgba(255,255,255,.93);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);
+  border:1.5px solid #17171A;border-radius:999px;padding:8px 18px;
+  font-size:14.5px;font-weight:800;letter-spacing:.1em;color:#17171A;
+  display:flex;align-items:center;gap:8px;pointer-events:none;box-shadow:0 2px 10px rgba(23,23,26,.08)}
+.bld .tag i{width:8px;height:8px;border-radius:50%;background:var(--c);flex:none}
 .row{margin:clamp(6px,2vw,18px) 0}
 .row.r1{width:82%;margin-right:auto}
 .row.r2{width:78%;margin-left:auto;margin-top:-2%}
@@ -168,74 +176,7 @@ body{
 <script>
 const MAP = [
 {
-  id:'money', no:'TIME 01', name:'赚钱研习社', color:'#2C5F9E', img:'img/money.png',
-  quote:'为想要的生活攒底气的时间。钱是自由的筹码，先从想明白开始。',
-  groups:[
-    {g:'财富课堂', items:[
-      {n:'创富圈十大理论 · NEXUS', d:'十个关于钱的思维模型，赛博霓虹号外风', u:'https://star04050405.github.io/ten-theories/'},
-      {n:'情绪周期 · 交易仪表盘', d:'A 股情绪五档六阶段 + 连板天梯，明日计划', u:'https://moodcycle2026.netlify.app/'},
-    ]}
-  ]
-},
-{
-  id:'cafe', no:'TIME 02', name:'生存咖啡馆', color:'#7FB99F', img:'img/cafe.png',
-  quote:'好好吃饭、好好睡觉、攒够能量——生存时间是所有时间的地基。',
-  groups:[
-    {g:'吃好吃饱', items:[
-      {n:'SUGO · 意面酱研所', d:'13 款经典意面酱 + 「今晚做什么酱」推荐器', u:'https://welovetigers2010-cloud.github.io/sugo/'},
-      {n:'三明治研究所', d:'叠叠乐结构诊断 + 风味配对 + 50 种实拍食材', u:'https://sandwich-lab.netlify.app/'},
-      {n:'地中海食单 · 麦德龙版', d:'抗炎饮食长文案全收录 + 9 类采购清单', u:'https://welovetigers2010-cloud.github.io/metro-medit/'},
-      {n:'MUJI 良品食单', d:'13 分类 39 件休食饮料，60 轮搜图验货', u:'https://star04050405.github.io/muji/'},
-      {n:'香草圣经 · 翻页手账', d:'《DK 香草圣经》100 种香草打卡 + 配方页', u:'https://star04050405.github.io/xiangcao/'},
-      {n:'深夜食堂 · めしや', d:'16 品日式家常，每品一句深夜故事', u:'https://welovetigers2010-cloud.github.io/midnight-diner/'},
-      {n:'深夜食堂 · V2', d:'图片全新版，御注文票照旧', u:'https://welovetigers2010-cloud.github.io/midnight-diner-v2/'},
-      {n:'气泡喫茶店 ソーダ喫茶', d:'昭和喫茶 + 六段时段自动换装', u:'https://welovetigers2010-cloud.github.io/soda-kissa/'},
-      {n:'喫茶 昭和堂', d:'布丁、巴菲、奶油苏打，珈琲の香り', u:'https://welovetigers2010-cloud.github.io/kissa-showado/'},
-      {n:'故事咖啡馆', d:'点单上桌 + 毛绒熊调色 + 古典信纸手记', u:'https://welovetigers2010-cloud.github.io/story-cafe/'},
-    ]},
-    {g:'能量补给', items:[
-      {n:'高能量女孩的一天', d:'每日更新日程，14 天不重样的能量剧本', u:'https://star04050405.github.io/energy/'},
-      {n:'能量发电厂', d:'3B 模型 + 六种物质 + 超新星六周计划', u:'https://powerplant2026.netlify.app/'},
-      {n:'养出高能量 · 速查', d:'全书要点速查 + 每日 9 项充电打卡', u:'https://high-on-energy.netlify.app/'},
-      {n:'六周能量打卡', d:'超新星 / 新星双计划 ×6 周任务墙', u:'https://hoe-6week.netlify.app/'},
-      {n:'能量吧台', d:'两本书装进心里，书架 + 每日三卡', u:'https://energybar2026.netlify.app/'},
-    ]},
-    {g:'睡前安静', items:[
-      {n:'静界 · 冥想空间', d:'深夜场景 + 呼吸引导环 + 程序化环境音', u:'https://zen-space2026.netlify.app/'},
-      {n:'冥想室', d:'二十个可以进去的房间，CG 光线', u:'https://welovetigers2010-cloud.github.io/meditation/'},
-      {n:'五间房 · Quiet Rooms', d:'五扇拱门：呼吸 / 专注 / 睡眠 / 清晨 / 身体', u:'https://welovetigers2010-cloud.github.io/quiet-rooms/'},
-      {n:'倒空 · Brain Detox', d:'深夜 brain dump，气泡放掉不留痕', u:'https://welovetigers2010-cloud.github.io/brain-detox/'},
-    ]},
-    {g:'今日日程', items:[
-      {n:'day. 我的一天', d:'正向生活 47 项习惯库，fabulous 式时间轴', u:'https://star04050405.github.io/myday/'},
-    ]}
-  ]
-},
-{
-  id:'gym', no:'TIME 03', name:'好看练功场', color:'#E88B8B', img:'img/gym.png',
-  quote:'花在自己身上的每一滴汗，都算数。变好看是练出来的。',
-  groups:[
-    {g:'跟练计划', items:[
-      {n:'PAMELA · 一周跟练', d:'帕梅拉周计划，黑白德系海报风', u:'https://star04050405.github.io/pamela/'},
-      {n:'PAMELA · 经典课库', d:'帕梅拉课程全集，按部位随时查', u:'https://star04050405.github.io/pamela-lib/'},
-      {n:'Reset 56 · 八周重置', d:'100 天计划科学压缩 56 天，粉蓝 bujo', u:'https://welovetigers2010-cloud.github.io/reset56/'},
-      {n:'RESET·30 猛攻计划', d:'30 天精选猛攻，黑底荧光绿 HUD', u:'https://welovetigers2010-cloud.github.io/reset30/'},
-      {n:'REBUILD·60 重建计划', d:'100 节课一节不删，同类合并成 60 天', u:'https://welovetigers2010-cloud.github.io/rebuild60/'},
-      {n:'阿斯汤加练习册', d:'33 体式梵文计数 + 全屏跟练模式', u:'https://welovetigers2010-cloud.github.io/ashtanga/'},
-      {n:'花样瘦身 100 · 自由清零', d:'25 练 × 4 节自由路线，按天解锁不存在', u:'https://star04050405.github.io/huayang/'},
-    ]},
-    {g:'体态专区', items:[
-      {n:'21 天体态重塑', d:'颈肩背体态训练计划', u:'https://welovetigers2010-cloud.github.io/posture21/'},
-      {n:'颈肩背图谱', d:'肌肉 / 动作 / 体态调整速查', u:'https://posture-lab.netlify.app/'},
-    ]},
-    {g:'力量与精致', items:[
-      {n:"IT'S ME · 女子力量俱乐部", d:'HIIT 计时 + 1RM 计算 + 杠铃配重可视化', u:'https://star04050405.github.io/itsme/'},
-      {n:'精致女孩的一天', d:'芭比粉时间轴，六时段点亮', u:'https://welovetigers2010-cloud.github.io/pretty-day/'},
-    ]}
-  ]
-},
-{
-  id:'flow', no:'TIME 04', name:'心流自习室', color:'#7FA8C9', img:'img/flow.png',
+  id:'flow', no:'TIME 04', name:'心流自习室', color:'#7FA8C9', img:'img/sr-flow.png',
   quote:'沉浸进去、忘记时间的那一刻，就是心流。这栋楼最大，慢慢逛。',
   groups:[
     {g:'读书会', items:[
@@ -294,7 +235,74 @@ const MAP = [
   ]
 },
 {
-  id:'fun', no:'TIME 05', name:'好玩贩卖机', color:'#B9A3D0', img:'img/fun.png',
+  id:'money', no:'TIME 01', name:'赚钱研习社', color:'#2C5F9E', img:'img/sr-money.png',
+  quote:'为想要的生活攒底气的时间。钱是自由的筹码，先从想明白开始。',
+  groups:[
+    {g:'财富课堂', items:[
+      {n:'创富圈十大理论 · NEXUS', d:'十个关于钱的思维模型，赛博霓虹号外风', u:'https://star04050405.github.io/ten-theories/'},
+      {n:'情绪周期 · 交易仪表盘', d:'A 股情绪五档六阶段 + 连板天梯，明日计划', u:'https://moodcycle2026.netlify.app/'},
+    ]}
+  ]
+},
+{
+  id:'cafe', no:'TIME 02', name:'生存咖啡馆', color:'#7FB99F', img:'img/sr-cafe.png',
+  quote:'好好吃饭、好好睡觉、攒够能量——生存时间是所有时间的地基。',
+  groups:[
+    {g:'吃好吃饱', items:[
+      {n:'SUGO · 意面酱研所', d:'13 款经典意面酱 + 「今晚做什么酱」推荐器', u:'https://welovetigers2010-cloud.github.io/sugo/'},
+      {n:'三明治研究所', d:'叠叠乐结构诊断 + 风味配对 + 50 种实拍食材', u:'https://sandwich-lab.netlify.app/'},
+      {n:'地中海食单 · 麦德龙版', d:'抗炎饮食长文案全收录 + 9 类采购清单', u:'https://welovetigers2010-cloud.github.io/metro-medit/'},
+      {n:'MUJI 良品食单', d:'13 分类 39 件休食饮料，60 轮搜图验货', u:'https://star04050405.github.io/muji/'},
+      {n:'香草圣经 · 翻页手账', d:'《DK 香草圣经》100 种香草打卡 + 配方页', u:'https://star04050405.github.io/xiangcao/'},
+      {n:'深夜食堂 · めしや', d:'16 品日式家常，每品一句深夜故事', u:'https://welovetigers2010-cloud.github.io/midnight-diner/'},
+      {n:'深夜食堂 · V2', d:'图片全新版，御注文票照旧', u:'https://welovetigers2010-cloud.github.io/midnight-diner-v2/'},
+      {n:'气泡喫茶店 ソーダ喫茶', d:'昭和喫茶 + 六段时段自动换装', u:'https://welovetigers2010-cloud.github.io/soda-kissa/'},
+      {n:'喫茶 昭和堂', d:'布丁、巴菲、奶油苏打，珈琲の香り', u:'https://welovetigers2010-cloud.github.io/kissa-showado/'},
+      {n:'故事咖啡馆', d:'点单上桌 + 毛绒熊调色 + 古典信纸手记', u:'https://welovetigers2010-cloud.github.io/story-cafe/'},
+    ]},
+    {g:'能量补给', items:[
+      {n:'高能量女孩的一天', d:'每日更新日程，14 天不重样的能量剧本', u:'https://star04050405.github.io/energy/'},
+      {n:'能量发电厂', d:'3B 模型 + 六种物质 + 超新星六周计划', u:'https://powerplant2026.netlify.app/'},
+      {n:'养出高能量 · 速查', d:'全书要点速查 + 每日 9 项充电打卡', u:'https://high-on-energy.netlify.app/'},
+      {n:'六周能量打卡', d:'超新星 / 新星双计划 ×6 周任务墙', u:'https://hoe-6week.netlify.app/'},
+      {n:'能量吧台', d:'两本书装进心里，书架 + 每日三卡', u:'https://energybar2026.netlify.app/'},
+    ]},
+    {g:'睡前安静', items:[
+      {n:'静界 · 冥想空间', d:'深夜场景 + 呼吸引导环 + 程序化环境音', u:'https://zen-space2026.netlify.app/'},
+      {n:'冥想室', d:'二十个可以进去的房间，CG 光线', u:'https://welovetigers2010-cloud.github.io/meditation/'},
+      {n:'五间房 · Quiet Rooms', d:'五扇拱门：呼吸 / 专注 / 睡眠 / 清晨 / 身体', u:'https://welovetigers2010-cloud.github.io/quiet-rooms/'},
+      {n:'倒空 · Brain Detox', d:'深夜 brain dump，气泡放掉不留痕', u:'https://welovetigers2010-cloud.github.io/brain-detox/'},
+    ]},
+    {g:'今日日程', items:[
+      {n:'day. 我的一天', d:'正向生活 47 项习惯库，fabulous 式时间轴', u:'https://star04050405.github.io/myday/'},
+    ]}
+  ]
+},
+{
+  id:'gym', no:'TIME 03', name:'好看练功场', color:'#E88B8B', img:'img/sr-gym.png',
+  quote:'花在自己身上的每一滴汗，都算数。变好看是练出来的。',
+  groups:[
+    {g:'跟练计划', items:[
+      {n:'PAMELA · 一周跟练', d:'帕梅拉周计划，黑白德系海报风', u:'https://star04050405.github.io/pamela/'},
+      {n:'PAMELA · 经典课库', d:'帕梅拉课程全集，按部位随时查', u:'https://star04050405.github.io/pamela-lib/'},
+      {n:'Reset 56 · 八周重置', d:'100 天计划科学压缩 56 天，粉蓝 bujo', u:'https://welovetigers2010-cloud.github.io/reset56/'},
+      {n:'RESET·30 猛攻计划', d:'30 天精选猛攻，黑底荧光绿 HUD', u:'https://welovetigers2010-cloud.github.io/reset30/'},
+      {n:'REBUILD·60 重建计划', d:'100 节课一节不删，同类合并成 60 天', u:'https://welovetigers2010-cloud.github.io/rebuild60/'},
+      {n:'阿斯汤加练习册', d:'33 体式梵文计数 + 全屏跟练模式', u:'https://welovetigers2010-cloud.github.io/ashtanga/'},
+      {n:'花样瘦身 100 · 自由清零', d:'25 练 × 4 节自由路线，按天解锁不存在', u:'https://star04050405.github.io/huayang/'},
+    ]},
+    {g:'体态专区', items:[
+      {n:'21 天体态重塑', d:'颈肩背体态训练计划', u:'https://welovetigers2010-cloud.github.io/posture21/'},
+      {n:'颈肩背图谱', d:'肌肉 / 动作 / 体态调整速查', u:'https://posture-lab.netlify.app/'},
+    ]},
+    {g:'力量与精致', items:[
+      {n:"IT'S ME · 女子力量俱乐部", d:'HIIT 计时 + 1RM 计算 + 杠铃配重可视化', u:'https://star04050405.github.io/itsme/'},
+      {n:'精致女孩的一天', d:'芭比粉时间轴，六时段点亮', u:'https://welovetigers2010-cloud.github.io/pretty-day/'},
+    ]}
+  ]
+},
+{
+  id:'fun', no:'TIME 05', name:'好玩贩卖机', color:'#B9A3D0', img:'img/sr-fun.png',
   quote:'不为什么而做的时间，才是纯粹的好玩时间。投币，开抽。',
   groups:[
     {g:'追剧现场', items:[
@@ -330,6 +338,7 @@ $('#pins').innerHTML=MAP.map(m=>'<span class="pin" style="background:'+m.color+'
 const rows=['r1','r2','r3','r4','r5'];
 $('#blocks').innerHTML=MAP.map((m,i)=>
   '<div class="row '+rows[i]+'"><button class="bld" data-id="'+m.id+'" aria-label="'+m.name+'">'+
+  '<span class="tag" style="--c:'+m.color+'"><i></i>'+m.name+'</span>'+
   '<img src="'+m.img+'" alt="'+m.name+'" loading="lazy"></button></div>').join('');
 
 const blds=[...document.querySelectorAll('.bld')];
