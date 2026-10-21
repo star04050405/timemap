@@ -38,13 +38,6 @@ body{
 .bld:active{transform:scale(.975)}
 .bld img{width:100%;height:auto;display:block;pointer-events:none}
 #blocks{margin-top:40px}
-.bld{position:relative}
-.bld .tag{position:absolute;top:2.5%;left:50%;transform:translateX(-50%);z-index:2;
-  white-space:nowrap;background:rgba(255,255,255,.93);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);
-  border:1.5px solid #17171A;border-radius:999px;padding:8px 18px;
-  font-size:14.5px;font-weight:800;letter-spacing:.1em;color:#17171A;
-  display:flex;align-items:center;gap:8px;pointer-events:none;box-shadow:0 2px 10px rgba(23,23,26,.08)}
-.bld .tag i{width:8px;height:8px;border-radius:50%;background:var(--c);flex:none}
 .row{margin:clamp(6px,2vw,18px) 0}
 .row.r1{width:82%;margin-right:auto}
 .row.r2{width:78%;margin-left:auto;margin-top:-2%}
@@ -174,9 +167,8 @@ body{
 </div>
 
 <script>
-const MAP = [
-{
-  id:'flow', no:'TIME 04', name:'心流自习室', color:'#7FA8C9', img:'img/sr-flow.png',
+const MAP = [{
+  id:'flow', no:'TIME 04', name:'心流自习室', color:'#7FA8C9', img:'img/flow.png',
   quote:'沉浸进去、忘记时间的那一刻，就是心流。这栋楼最大，慢慢逛。',
   groups:[
     {g:'读书会', items:[
@@ -235,7 +227,54 @@ const MAP = [
   ]
 },
 {
-  id:'money', no:'TIME 01', name:'赚钱研习社', color:'#2C5F9E', img:'img/sr-money.png',
+  id:'gym', no:'TIME 03', name:'好看练功场', color:'#E88B8B', img:'img/gym.png',
+  quote:'花在自己身上的每一滴汗，都算数。变好看是练出来的。',
+  groups:[
+    {g:'跟练计划', items:[
+      {n:'PAMELA · 一周跟练', d:'帕梅拉周计划，黑白德系海报风', u:'https://star04050405.github.io/pamela/'},
+      {n:'PAMELA · 经典课库', d:'帕梅拉课程全集，按部位随时查', u:'https://star04050405.github.io/pamela-lib/'},
+      {n:'Reset 56 · 八周重置', d:'100 天计划科学压缩 56 天，粉蓝 bujo', u:'https://welovetigers2010-cloud.github.io/reset56/'},
+      {n:'RESET·30 猛攻计划', d:'30 天精选猛攻，黑底荧光绿 HUD', u:'https://welovetigers2010-cloud.github.io/reset30/'},
+      {n:'REBUILD·60 重建计划', d:'100 节课一节不删，同类合并成 60 天', u:'https://welovetigers2010-cloud.github.io/rebuild60/'},
+      {n:'阿斯汤加练习册', d:'33 体式梵文计数 + 全屏跟练模式', u:'https://welovetigers2010-cloud.github.io/ashtanga/'},
+      {n:'花样瘦身 100 · 自由清零', d:'25 练 × 4 节自由路线，按天解锁不存在', u:'https://star04050405.github.io/huayang/'},
+    ]},
+    {g:'体态专区', items:[
+      {n:'21 天体态重塑', d:'颈肩背体态训练计划', u:'https://welovetigers2010-cloud.github.io/posture21/'},
+      {n:'颈肩背图谱', d:'肌肉 / 动作 / 体态调整速查', u:'https://posture-lab.netlify.app/'},
+    ]},
+    {g:'力量与精致', items:[
+      {n:"IT'S ME · 女子力量俱乐部", d:'HIIT 计时 + 1RM 计算 + 杠铃配重可视化', u:'https://star04050405.github.io/itsme/'},
+      {n:'精致女孩的一天', d:'芭比粉时间轴，六时段点亮', u:'https://welovetigers2010-cloud.github.io/pretty-day/'},
+    ]}
+  ]
+},
+{
+  id:'fun', no:'TIME 05', name:'好玩贩卖机', color:'#B9A3D0', img:'img/fun.png',
+  quote:'不为什么而做的时间，才是纯粹的好玩时间。投币，开抽。',
+  groups:[
+    {g:'追剧现场', items:[
+      {n:'英剧打卡 · 追剧打卡小站', d:'12 部剧库，标记在追/想看/看完，连续打卡', u:'https://star04050405.github.io/telly/'},
+      {n:'JOJO 追剧手账', d:'190 话格子墙，六部制霸星章', u:'https://star04050405.github.io/jojo/'},
+      {n:'better call saul. 63 集', d:'BCS 黄黑广告牌 + 彩蛋格', u:'https://star04050405.github.io/bettercall/'},
+      {n:'花学旅行图鉴 · 花少2', d:'12 站路线 + 花学名场面档案', u:'https://star04050405.github.io/hs2/'},
+      {n:'影视手账', d:'追剧观影逐集打卡，TMDB 数据', u:'https://screen-log2026.netlify.app/'},
+      {n:'电影大师馆', d:'世界著名导演作品全收录', u:'https://cinema-masters.netlify.app/'},
+    ]},
+    {g:'在路上', items:[
+      {n:'意大利旅行图鉴', d:'十城地图 + 路线 + 攻略抽屉', u:'https://star04050405.github.io/italy/'},
+      {n:'山东旅行图鉴', d:'16 城 67 景点 3 条路线', u:'https://star04050405.github.io/shandong/'},
+    ]},
+    {g:'抽卡机', items:[
+      {n:'肯定语贩卖机', d:'投币 gacha，60 句 × 5 口味汽水', u:'https://affirm-vending.netlify.app/'},
+      {n:'能量石工坊', d:'抽能量石 + 首饰穿戴预览', u:'https://crystal-atelier.netlify.app/'},
+      {n:'情绪鸡尾酒 · 调配台', d:'六酒瓶调酒，5 款状态配方', u:'https://emotioncocktail.netlify.app/'},
+      {n:'GAME HUB', d:'675 个游戏库，收藏置顶', u:'https://gamehub2026.netlify.app/'},
+    ]}
+  ]
+},
+{
+  id:'money', no:'TIME 01', name:'赚钱研习社', color:'#2C5F9E', img:'img/money.png',
   quote:'为想要的生活攒底气的时间。钱是自由的筹码，先从想明白开始。',
   groups:[
     {g:'财富课堂', items:[
@@ -245,7 +284,7 @@ const MAP = [
   ]
 },
 {
-  id:'cafe', no:'TIME 02', name:'生存咖啡馆', color:'#7FB99F', img:'img/sr-cafe.png',
+  id:'cafe', no:'TIME 02', name:'生存咖啡馆', color:'#7FB99F', img:'img/cafe.png',
   quote:'好好吃饭、好好睡觉、攒够能量——生存时间是所有时间的地基。',
   groups:[
     {g:'吃好吃饱', items:[
@@ -277,53 +316,6 @@ const MAP = [
       {n:'day. 我的一天', d:'正向生活 47 项习惯库，fabulous 式时间轴', u:'https://star04050405.github.io/myday/'},
     ]}
   ]
-},
-{
-  id:'gym', no:'TIME 03', name:'好看练功场', color:'#E88B8B', img:'img/sr-gym.png',
-  quote:'花在自己身上的每一滴汗，都算数。变好看是练出来的。',
-  groups:[
-    {g:'跟练计划', items:[
-      {n:'PAMELA · 一周跟练', d:'帕梅拉周计划，黑白德系海报风', u:'https://star04050405.github.io/pamela/'},
-      {n:'PAMELA · 经典课库', d:'帕梅拉课程全集，按部位随时查', u:'https://star04050405.github.io/pamela-lib/'},
-      {n:'Reset 56 · 八周重置', d:'100 天计划科学压缩 56 天，粉蓝 bujo', u:'https://welovetigers2010-cloud.github.io/reset56/'},
-      {n:'RESET·30 猛攻计划', d:'30 天精选猛攻，黑底荧光绿 HUD', u:'https://welovetigers2010-cloud.github.io/reset30/'},
-      {n:'REBUILD·60 重建计划', d:'100 节课一节不删，同类合并成 60 天', u:'https://welovetigers2010-cloud.github.io/rebuild60/'},
-      {n:'阿斯汤加练习册', d:'33 体式梵文计数 + 全屏跟练模式', u:'https://welovetigers2010-cloud.github.io/ashtanga/'},
-      {n:'花样瘦身 100 · 自由清零', d:'25 练 × 4 节自由路线，按天解锁不存在', u:'https://star04050405.github.io/huayang/'},
-    ]},
-    {g:'体态专区', items:[
-      {n:'21 天体态重塑', d:'颈肩背体态训练计划', u:'https://welovetigers2010-cloud.github.io/posture21/'},
-      {n:'颈肩背图谱', d:'肌肉 / 动作 / 体态调整速查', u:'https://posture-lab.netlify.app/'},
-    ]},
-    {g:'力量与精致', items:[
-      {n:"IT'S ME · 女子力量俱乐部", d:'HIIT 计时 + 1RM 计算 + 杠铃配重可视化', u:'https://star04050405.github.io/itsme/'},
-      {n:'精致女孩的一天', d:'芭比粉时间轴，六时段点亮', u:'https://welovetigers2010-cloud.github.io/pretty-day/'},
-    ]}
-  ]
-},
-{
-  id:'fun', no:'TIME 05', name:'好玩贩卖机', color:'#B9A3D0', img:'img/sr-fun.png',
-  quote:'不为什么而做的时间，才是纯粹的好玩时间。投币，开抽。',
-  groups:[
-    {g:'追剧现场', items:[
-      {n:'英剧打卡 · 追剧打卡小站', d:'12 部剧库，标记在追/想看/看完，连续打卡', u:'https://star04050405.github.io/telly/'},
-      {n:'JOJO 追剧手账', d:'190 话格子墙，六部制霸星章', u:'https://star04050405.github.io/jojo/'},
-      {n:'better call saul. 63 集', d:'BCS 黄黑广告牌 + 彩蛋格', u:'https://star04050405.github.io/bettercall/'},
-      {n:'花学旅行图鉴 · 花少2', d:'12 站路线 + 花学名场面档案', u:'https://star04050405.github.io/hs2/'},
-      {n:'影视手账', d:'追剧观影逐集打卡，TMDB 数据', u:'https://screen-log2026.netlify.app/'},
-      {n:'电影大师馆', d:'世界著名导演作品全收录', u:'https://cinema-masters.netlify.app/'},
-    ]},
-    {g:'在路上', items:[
-      {n:'意大利旅行图鉴', d:'十城地图 + 路线 + 攻略抽屉', u:'https://star04050405.github.io/italy/'},
-      {n:'山东旅行图鉴', d:'16 城 67 景点 3 条路线', u:'https://star04050405.github.io/shandong/'},
-    ]},
-    {g:'抽卡机', items:[
-      {n:'肯定语贩卖机', d:'投币 gacha，60 句 × 5 口味汽水', u:'https://affirm-vending.netlify.app/'},
-      {n:'能量石工坊', d:'抽能量石 + 首饰穿戴预览', u:'https://crystal-atelier.netlify.app/'},
-      {n:'情绪鸡尾酒 · 调配台', d:'六酒瓶调酒，5 款状态配方', u:'https://emotioncocktail.netlify.app/'},
-      {n:'GAME HUB', d:'675 个游戏库，收藏置顶', u:'https://gamehub2026.netlify.app/'},
-    ]}
-  ]
 }
 ];
 
@@ -338,8 +330,7 @@ $('#pins').innerHTML=MAP.map(m=>'<span class="pin" style="background:'+m.color+'
 const rows=['r1','r2','r3','r4','r5'];
 $('#blocks').innerHTML=MAP.map((m,i)=>
   '<div class="row '+rows[i]+'"><button class="bld" data-id="'+m.id+'" aria-label="'+m.name+'">'+
-  '<span class="tag" style="--c:'+m.color+'"><i></i>'+m.name+'</span>'+
-  '<img src="'+m.img+'" alt="'+m.name+'" loading="lazy"></button></div>').join('');
+    '<img src="'+m.img+'" alt="'+m.name+'" loading="lazy"></button></div>').join('');
 
 const blds=[...document.querySelectorAll('.bld')];
 const io=new IntersectionObserver(es=>es.forEach((e,idx)=>{
