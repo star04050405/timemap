@@ -107,6 +107,15 @@ body{
   font-size:12px;cursor:pointer;display:none;line-height:1}
 .sclear.show{display:block}
 .sbar input[type=search]::-webkit-search-cancel-button,.sbar input[type=search]::-webkit-search-decoration{-webkit-appearance:none;appearance:none}
+#shist{display:none}
+#shist.show{display:block}
+#shist .scount{margin:30px 2px 4px;font-size:12px;color:#8b8b86;letter-spacing:.18em}
+.sh-item{display:flex;align-items:center;gap:12px;padding:13px 2px;border-bottom:1px solid #ecece6;cursor:pointer}
+.sh-item:active{background:#f3f3ee}
+.sh-item .ic{flex:none;font-size:13px;opacity:.5}
+.sh-item .w{flex:1;min-width:0;font-size:15px;font-weight:700;color:#17171A;letter-spacing:.02em;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.sh-item .x{flex:none;border:0;background:#efefe9;color:#6b6b66;width:24px;height:24px;border-radius:50%;font-size:11px;line-height:1;cursor:pointer;padding:0;flex-shrink:0}
+.sh-item .x:active{background:#e3e3da;color:#17171A}
 #sres{display:none}
 #sres.show{display:block}
 #sres .scount{margin:30px 2px 4px;font-size:12px;color:#8b8b86;letter-spacing:.18em}
@@ -145,6 +154,7 @@ body{
     <button class="sclear" id="sclear" aria-label="清空搜索">&#10005;</button>
   </div>
   <div id="sres"></div>
+  <div id="shist"></div>
   <!-- 楼由 JS 注入 -->
   <div id="blocks"></div>
   <div class="hint">↑ ↓ 漫步 · 点楼进入</div>
@@ -403,6 +413,7 @@ function doSearch(){
     document.getElementById('blocks').style.display='';
     document.querySelector('.hint').style.display='';
     if(location.search){try{history.replaceState('',document.title,location.pathname+location.hash);}catch(e){}}
+    renderHist();
     return;
   }
   // 搜索词写进网址：从子站按返回键回到这里时，自动还原这层搜索结果
@@ -429,11 +440,43 @@ function doSearch(){
   }
   sres.classList.add('show');
 }
+// ---------- 搜索历史 ----------
+const shist=document.getElementById('shist');
+const HKEY='timemap_search_v1';
+function getHist(){try{const r=JSON.parse(localStorage.getItem(HKEY));return Array.isArray(r)?r:[]}catch(e){return[]}}
+function setHist(h){try{localStorage.setItem(HKEY,JSON.stringify(h.slice(0,10)))}catch(e){}}
+function addHist(q){
+  q=(q||'').trim();if(!q)return;
+  let h=getHist().filter(x=>x!==q);h.unshift(q);setHist(h);
+}
+function renderHist(){
+  const h=getHist();
+  if(!h.length){shist.classList.remove('show');shist.innerHTML='';return}
+  shist.innerHTML='<div class="scount">最近搜索</div>'+h.map(q=>
+    '<div class="sh-item" data-q="'+esc(q)+'"><span class="ic">🕘</span><span class="w">'+esc(q)+'</span>'+
+    '<button class="x" data-q="'+esc(q)+'" aria-label="删除这条记录">✕</button></div>').join('');
+  shist.classList.add('show');
+}
+function hideHist(){shist.classList.remove('show')}
+shist.addEventListener('click',e=>{
+  const x=e.target.closest('.x');
+  if(x){e.stopPropagation();setHist(getHist().filter(y=>y!==x.getAttribute('data-q')));renderHist();return}
+  const it=e.target.closest('.sh-item');
+  if(it){sinput.value=it.getAttribute('data-q');hideHist();doSearch();}
+});
+sinput.addEventListener('focus',()=>{if(!sinput.value.trim())renderHist();});
+document.addEventListener('click',e=>{
+  if(!e.target.closest('.sbar')&&!e.target.closest('#shist')&&!e.target.closest('#sres'))hideHist();
+});
+sres.addEventListener('click',e=>{
+  if(e.target.closest('a.sr')){const q=sinput.value.trim();if(q)addHist(q);}
+});
+sinput.addEventListener('input',()=>{if(!sinput.value.trim())renderHist();else hideHist();});
 sinput.addEventListener('input',()=>{clearTimeout(stimer);stimer=setTimeout(doSearch,110)});
 sclear.addEventListener('click',()=>{sinput.value='';doSearch();sinput.focus()});
-sinput.addEventListener('keydown',e=>{if(e.key==='Enter'){e.preventDefault();sinput.blur();}});
+sinput.addEventListener('keydown',e=>{if(e.key==='Enter'){e.preventDefault();const q=sinput.value.trim();if(q)addHist(q);sinput.blur();}});
 const _sq=new URLSearchParams(location.search).get('q');
-if(_sq){sinput.value=_sq;doSearch();}
+if(_sq){sinput.value=_sq;doSearch();addHist(_sq);}
 else if(location.hash){const id=location.hash.slice(1);if(MAP.some(m=>m.id===id))setTimeout(()=>openCat(id),120);}
 
 </script>
