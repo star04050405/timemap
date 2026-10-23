@@ -399,8 +399,11 @@ function doSearch(){
     sres.classList.remove('show'); sres.innerHTML='';
     document.getElementById('blocks').style.display='';
     document.querySelector('.hint').style.display='';
+    if(location.search){try{history.replaceState('',document.title,location.pathname+location.hash);}catch(e){}}
     return;
   }
+  // 搜索词写进网址：从子站按返回键回到这里时，自动还原这层搜索结果
+  try{history.replaceState('',document.title,location.pathname+'?q='+encodeURIComponent(sinput.value.trim())+location.hash);}catch(e){}
   const hits=[];
   MAP.forEach(m=>m.groups.forEach(g=>g.items.forEach(it=>{
     if((it.n+' '+it.d+' '+g.g+' '+m.name).toLowerCase().includes(q))
@@ -426,7 +429,9 @@ function doSearch(){
 sinput.addEventListener('input',()=>{clearTimeout(stimer);stimer=setTimeout(doSearch,110)});
 sclear.addEventListener('click',()=>{sinput.value='';doSearch();sinput.focus()});
 sinput.addEventListener('keydown',e=>{if(e.key==='Enter'){e.preventDefault();sinput.blur();}});
-if(location.hash){const id=location.hash.slice(1);if(MAP.some(m=>m.id===id))setTimeout(()=>openCat(id),120);}
+const _sq=new URLSearchParams(location.search).get('q');
+if(_sq){sinput.value=_sq;doSearch();}
+else if(location.hash){const id=location.hash.slice(1);if(MAP.some(m=>m.id===id))setTimeout(()=>openCat(id),120);}
 
 </script>
 </body>
