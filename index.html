@@ -1,0 +1,442 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>五种时间地图</title>
+<meta name="theme-color" content="#FBFBF9">
+<link rel="icon" type="image/png" href="icon-192.png">
+<link rel="apple-touch-icon" href="apple-touch-icon-180.png">
+<link rel="manifest" href="manifest.json">
+<style>
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html{scroll-behavior:smooth}
+body{
+  background:#FBFBF9;color:#17171A;
+  font-family:-apple-system,BlinkMacSystemFont,"PingFang SC","Noto Sans SC","Microsoft YaHei",sans-serif;
+  min-height:100vh;overflow-x:hidden;
+}
+/* ---------- 地图页 ---------- */
+#map{max-width:640px;margin:0 auto;padding:clamp(28px,7vw,56px) 20px 60px}
+.mast{text-align:center;margin-bottom:8px}
+.mast .eyebrow{font-size:11px;letter-spacing:.35em;color:#9a9a95;font-weight:600}
+.mast h1{
+  font-size:clamp(34px,9.5vw,52px);font-weight:900;letter-spacing:.02em;
+  margin-top:10px;line-height:1.15;
+}
+.mast .sub{margin-top:12px;font-size:13px;color:#8b8b86;letter-spacing:.12em}
+.mast .sub b{color:#17171A;font-weight:700}
+.pin{display:inline-block;width:7px;height:7px;border-radius:50%;margin:0 3px;vertical-align:1px}
+/* 楼 */
+.bld{
+  display:block;border:0;background:none;width:100%;cursor:pointer;
+  padding:0;opacity:0;transform:translateY(26px);
+  transition:opacity .7s ease,transform .7s cubic-bezier(.2,.7,.2,1);
+  will-change:transform;
+}
+.bld.in{opacity:1;transform:translateY(0)}
+.bld:active{transform:scale(.975)}
+.bld img{width:100%;height:auto;display:block;pointer-events:none}
+#blocks{margin-top:40px}
+.row{margin:clamp(6px,2vw,18px) 0}
+.row.r1{width:78%;margin-right:auto}
+.row.r2{width:78%;margin-left:auto;margin-top:-2%}
+.row.r3{width:78%;margin:clamp(-4px,-1vw,0px) auto}
+.row.r4{width:78%;margin-right:auto;margin-top:-3%}
+.row.r5{width:78%;margin-left:auto;margin-top:-2%}
+.hint{
+  text-align:center;margin-top:34px;font-size:12px;color:#b3b3ad;letter-spacing:.25em;
+}
+/* 底注 */
+.foot{
+  text-align:center;padding:44px 0 56px;color:#b9b9b3;font-size:12px;letter-spacing:.18em;line-height:2.1;
+}
+.foot .big{font-size:15px;color:#17171A;font-weight:800;letter-spacing:.28em}
+/* ---------- 分类页 ---------- */
+#cat{position:fixed;inset:0;background:#FBFBF9;z-index:10;overflow-y:auto;
+  -webkit-overflow-scrolling:touch;display:none}
+#cat.open{display:block;animation:catin .38s cubic-bezier(.2,.7,.2,1)}
+@keyframes catin{from{opacity:0;transform:translateY(30px)}to{opacity:1;transform:none}}
+.catwrap{max-width:640px;margin:0 auto;padding:0 20px 70px}
+.catbar{position:sticky;top:0;background:rgba(251,251,249,.92);backdrop-filter:blur(10px);z-index:5;
+  padding:14px 0 12px;border-bottom:1.5px solid #17171A;display:flex;align-items:center;gap:12px}
+.back{
+  border:1.5px solid #17171A;background:#fff;border-radius:999px;width:38px;height:38px;
+  font-size:17px;line-height:1;cursor:pointer;flex:none;color:#17171A;
+  transition:transform .15s;
+}
+.back:active{transform:scale(.92)}
+.catbar .cb-t{font-weight:900;font-size:18px;letter-spacing:.06em}
+.catbar .cb-n{margin-left:auto;font-size:12px;color:#9a9a95;letter-spacing:.15em;white-space:nowrap}
+.cather{padding:30px 2px 6px}
+.cather .c-no{font-family:Georgia,serif;font-style:italic;font-size:15px;color:var(--c);letter-spacing:.2em}
+.cather h2{font-size:clamp(28px,7.5vw,38px);font-weight:900;margin-top:6px}
+.cather .c-quote{margin-top:10px;font-size:14px;color:#7c7c76;line-height:1.8;max-width:30em}
+.cather .c-line{margin-top:18px;height:10px;width:64px;border-radius:99px;background:var(--c)}
+.gtitle{
+  margin:34px 0 4px;display:flex;align-items:baseline;gap:10px;
+  font-size:13px;font-weight:800;letter-spacing:.3em;color:#17171A;
+}
+.gtitle::after{content:"";flex:1;height:1px;background:#e2e2dc}
+.gtitle .gn{font-size:11px;color:#b3b3ad;letter-spacing:.1em;font-weight:600}
+.st{
+  display:flex;align-items:center;gap:14px;padding:15px 2px;
+  border-bottom:1px solid #ecece6;text-decoration:none;color:inherit;
+  opacity:0;transform:translateY(14px);animation:stin .5s cubic-bezier(.2,.7,.2,1) forwards;
+}
+@keyframes stin{to{opacity:1;transform:none}}
+.st:active{background:#f3f3ee}
+.st .dot{width:8px;height:8px;border-radius:50%;background:var(--c);flex:none;opacity:.9}
+.st .tx{flex:1;min-width:0}
+.st .nm{display:block;font-size:15.5px;font-weight:700;letter-spacing:.02em}
+.st .ds{display:block;font-size:12.5px;color:#8f8f89;margin-top:3px;line-height:1.5}
+.st .go{flex:none;text-align:right}
+.st .go .dm{font-size:10.5px;color:#b8b8b2;letter-spacing:.04em;font-family:ui-monospace,Menlo,monospace}
+.st .go .ar{display:block;text-align:right;font-size:15px;color:var(--c);margin-top:2px}
+
+/* ---------- 搜索 ---------- */
+.sbar{display:flex;align-items:center;gap:10px;margin:26px auto 0;max-width:480px;
+  background:#fff;border:1.5px solid #17171A;border-radius:999px;padding:0 16px;height:48px;
+  transition:box-shadow .2s}
+.sbar:focus-within{box-shadow:0 4px 0 rgba(23,23,26,.9)}
+.sbar .sicon{flex:none;font-size:15px;color:#17171A;opacity:.55}
+.sbar input{flex:1;min-width:0;border:0;outline:none;background:transparent;
+  font-size:16px;font-family:inherit;color:#17171A;letter-spacing:.02em}
+.sbar input::placeholder{color:#b9b9b3;letter-spacing:.1em}
+.sclear{flex:none;border:0;background:#efefe9;color:#17171A;width:26px;height:26px;border-radius:50%;
+  font-size:12px;cursor:pointer;display:none;line-height:1}
+.sclear.show{display:block}
+.sbar input[type=search]::-webkit-search-cancel-button,.sbar input[type=search]::-webkit-search-decoration{-webkit-appearance:none;appearance:none}
+#sres{display:none}
+#sres.show{display:block}
+#sres .scount{margin:30px 2px 4px;font-size:12px;color:#8b8b86;letter-spacing:.18em}
+#sres .scount b{color:#17171A}
+.sr{display:flex;align-items:center;gap:14px;padding:15px 2px;border-bottom:1px solid #ecece6;
+  text-decoration:none;color:inherit}
+.sr:active{background:#f3f3ee}
+.sr .dot{width:8px;height:8px;border-radius:50%;flex:none}
+.sr .tx{flex:1;min-width:0}
+.sr .fl{display:block;font-size:10.5px;letter-spacing:.2em;margin-bottom:3px;font-weight:700}
+.sr .nm{display:block;font-size:15.5px;font-weight:700;letter-spacing:.02em}
+.sr .nm mark{background:rgba(23,23,26,.12);color:inherit;border-radius:3px;padding:0 1px}
+.sr .ds{display:block;font-size:12.5px;color:#8f8f89;margin-top:3px;line-height:1.5;
+  white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.sr .go{flex:none;text-align:right}
+.sr .go .ar{font-size:15px;color:#9a9a95}
+.sr .go .ar{color:var(--c,#17171A)}
+.snone{text-align:center;padding:46px 0 10px;color:#b3b3ad;font-size:13px;letter-spacing:.15em;line-height:2.2}
+.snone b{color:#17171A;font-size:15px;letter-spacing:.05em;display:block}
+.catfoot{margin-top:44px;text-align:center;color:#c2c2bc;font-size:11.5px;letter-spacing:.22em}
+</style>
+</head>
+<body>
+
+<!-- 地图首页 -->
+<div id="map">
+  <div class="mast">
+    <div class="eyebrow">PERSONAL TIME ATLAS</div>
+    <h1>五种时间地图</h1>
+    <div class="sub">把做过的 <b id="tot">…</b> 个网站，分进五栋楼</div>
+    <div style="margin-top:10px" id="pins"></div>
+  </div>
+  <div class="sbar">
+    <span class="sicon">&#9906;</span>
+    <input id="sinput" type="search" placeholder="搜一个站：帕梅拉、庄子、追剧…" autocomplete="off" autocapitalize="off" enterkeyhint="search" aria-label="搜索全部网站">
+    <button class="sclear" id="sclear" aria-label="清空搜索">&#10005;</button>
+  </div>
+  <div id="sres"></div>
+  <!-- 楼由 JS 注入 -->
+  <div id="blocks"></div>
+  <div class="hint">↑ ↓ 漫步 · 点楼进入</div>
+  <div class="foot">
+    <div class="big" id="ftn">—</div>
+    <div>五栋楼 · 随住随取<br>2026 · 秋</div>
+  </div>
+</div>
+
+<!-- 分类页 -->
+<div id="cat">
+  <div class="catwrap">
+    <div class="catbar">
+      <button class="back" id="bk" aria-label="返回地图">←</button>
+      <div class="cb-t" id="cbT">—</div>
+      <div class="cb-n" id="cbN">—</div>
+    </div>
+    <div id="catBody"></div>
+  </div>
+</div>
+
+<script>
+const MAP = [{
+  id:'flow', no:'TIME 04', name:'心流自习室', color:'#7FA8C9', img:'img/flow.png',
+  quote:'沉浸进去、忘记时间的那一刻，就是心流。这栋楼最大，慢慢逛。',
+  groups:[
+    {g:'读书会', items:[
+      {n:'南华 · 怎么读庄子', d:'33 篇地图 + 三条读庄路线 + 名句画廊', u:'https://star04050405.github.io/zhuangzi/'},
+      {n:'兵法十三篇 · 翻页手账', d:'宣纸墨色朱砂，十三篇金句与心法', u:'https://star04050405.github.io/sunzi/'},
+      {n:'断舍离书系', d:'山下英子五本：减法 → 加法 → 乘法', u:'https://star04050405.github.io/danshari/'},
+      {n:'confidence. 八步自信', d:'《Manifest》八步黑皮书导读', u:'https://star04050405.github.io/confidence/'},
+      {n:'confidence. 精读版', d:'每章精读 + 实践双页，阅读伴侣', u:'https://star04050405.github.io/confidence-deep/'},
+      {n:'一发制胜 · 全书导读', d:'德约科维奇的赢法，白皮书排版', u:'https://star04050405.github.io/serve-to-win/'},
+      {n:'人生游戏 · 全书导读', d:'把人生当游戏玩的说明书', u:'https://star04050405.github.io/game-of-life/'},
+      {n:'gelato. 喵咪冰淇淋店', d:'小猫顾客模拟经营：接单→做冰淇淋→收鱼币，12 只小猫图鉴', u:'https://star04050405.github.io/gelato/'},
+      {n:'sip. 今天喝的每一杯', d:'每日茶饮记录：今天第几杯、喝的什么、甜度碎碎念', u:'https://star04050405.github.io/sip/'},
+      {n:'calm. 平静小书', d:'148 条双语伴读，今日一枚', u:'https://star04050405.github.io/calmbook/'},
+      {n:'学习之道 · 11 天要点册', d:'奥克利 71 小节全目录 + 核查表', u:'https://star04050405.github.io/learnlikeapro/'},
+      {n:'Kleon 双书学院', d:'《像艺术家一样偷窃》+《展示你的作品》20 课', u:'https://star04050405.github.io/kleon-school/'},
+      {n:'速 · Crash Course 打卡册', d:'20 门课 744 集，官网考古全目录', u:'https://star04050405.github.io/crashcourse/'},
+      {n:'情绪鸡尾酒 · 要点精华', d:'六瓶基酒一页讲完：它管什么、缺了怎样、怎么加料', u:'https://star04050405.github.io/cocktail/'},
+      {n:'具身认知 · 全书导读', d:'知觉先于思想：8 站讲完全书，环绕我们的也造就我们', u:'https://star04050405.github.io/embodied/'},
+      {n:'造星主 · 漫游手册', d:'斯特普尔顿 16 站星空朝圣，读完点亮星座', u:'https://star04050405.github.io/starmaker/'},
+      {n:'世界博物馆 · 书架', d:'27 册展馆书，高级灰×活力橙书架', u:'https://star04050405.github.io/museum/'},
+      {n:'party. 趁早大会 2026', d:'云参会：七章护照 + 愿景板导出 PNG', u:'https://star04050405.github.io/party/'},
+      {n:'nile. 尼罗河的倒影', d:'游学落地页，蓝金四幕', u:'https://star04050405.github.io/nile/'},
+      {n:'north. 一路向北', d:'步数数字徒步：北京→漠河 2065km，极光终点', u:'https://star04050405.github.io/north/'},
+      {n:'tomato. 番茄田', d:'Pomodoro 种田法：计时涨汁，收满一筐', u:'https://star04050405.github.io/tomato/'},
+      {n:'nikki. 个人手账', d:'封面/月历/心情印章/每日页自动存', u:'https://star04050405.github.io/nikki/'},
+      {n:'bcs63. 格子墙追剧', d:'风骚律师 63 集打卡墙，圣地巡礼版', u:'https://star04050405.github.io/bcs63/'},
+      {n:'almanac. 贴块手账', d:'文字/图片贴成彩色方块瀑布流，5 套 16 色主题包', u:'https://star04050405.github.io/almanac/'},
+      {n:'flip. 翻盖手账', d:'外屏时钟 + 翻盖摊开的每日笔记本', u:'https://star04050405.github.io/flip/'},
+      {n:'新概念英语 3 · 60 天', d:'60 天自学计划 + 笔记卡片', u:'https://nce3-60-2.netlify.app/'},
+      {n:'念之路 · 七章心性', d:'念能力心性修行七章', u:'https://star04050405.github.io/nen-path/'},
+      {n:'薄荷海盐 · 五百句', d:'500 句双语行动系语录，抽一句', u:'https://mint-seasalt.netlify.app/'},
+      {n:'24 IDEAS · 子弹笔记', d:'粉本手帐，索引正宗 BUJO', u:'https://pinknote2026.netlify.app/'},
+      {n:'MANIFEST · 显化练习手帐', d:'橙色灯塔本，七步 12 工具', u:'https://manifest2026.netlify.app/'},
+      {n:'显化星球 · 宇宙订单', d:'369 打卡 + 天使数字 + 显化证据', u:'https://manifest111.netlify.app/'},
+      {n:'十三美德 · 小册子', d:'富兰克林墨点自省表，13 周一轮', u:'https://franklins-virtues.netlify.app/'},
+      {n:'河图洛书 · 数之始', d:'数阵教学 + 排九宫 + 飞星盘', u:'https://welovetigers2010-cloud.github.io/hetu-luoshu/'},
+    ]},
+    {g:'手帐桌', items:[
+      {n:'手账 · 每天一页纸', d:'朱砂印章版，一日一页', u:'https://star04050405.github.io/shouzhang/'},
+      {n:'手账 V2 · 每天一张纸', d:'7 主题 20 字体 + 月历年历', u:'https://shouzhang2.netlify.app/'},
+      {n:'手账 · 记录生活', d:'可爱系手账本', u:'https://cutejournal2026.netlify.app/'},
+      {n:'莫兰迪点阵手账', d:'50 色低调沉稳点阵本', u:'https://morandi-bujo.netlify.app/'},
+      {n:'DAILY CARD · 日付便签', d:'便签翻页 + 月历年历 + 存图', u:'https://dailycard2026.netlify.app/'},
+      {n:'一日行楷 · 硬笔集训', d:'六课集训 + 笔顺描边动画', u:'https://welovetigers2010-cloud.github.io/xingkai-day/'},
+      {n:'Things Done', d:'四色分类待办，做完的都算数', u:'https://star04050405.github.io/things-done/'},
+      {n:'珍珠杯打卡 · 生活日志', d:'珍珠收集满杯注液，6 款波点', u:'https://polka-check.netlify.app/'},
+      {n:'百日打卡', d:'多课程 100 天学习计划', u:'https://mycheckin100.netlify.app/'},
+      {n:'趁早行动 · 课程打卡', d:'课程清单模型打卡', u:'https://chenzao2.netlify.app/'},
+    ]},
+    {g:'习惯工程', items:[
+      {n:'js. 学习地图', d:'24 个知识点配 85 站真实用例，学完点亮', u:'https://star04050405.github.io/jsmap/'},
+      {n:'习惯实验室', d:'掌控习惯 × 福格行为模型', u:'https://habit-lab.netlify.app/'},
+      {n:'时间账本 · 柳比歇夫法', d:'时间开销记账', u:'https://time-ledger0925.netlify.app/'},
+      {n:'成长驾驶舱', d:'百日 × Project50 × 账本 × 习惯 四表总览', u:'https://star04050405.github.io/growth-dashboard/'},
+      {n:'2026 最后 100 天 · 倒数', d:'固定日历窗口格子墙 + 愿望封存', u:'https://star04050405.github.io/to2027/'},
+      {n:'charge. 100小时充能', d:'纸质 100 HOURS OF FOCUS 的赛博版：日期+目标+100 格充能', u:'https://star04050405.github.io/charge100/'},
+      {n:'brick. 盖楼打卡册', d:'轴测积木盖楼，100 天 = 25 层', u:'https://star04050405.github.io/citybuild/'},
+      {n:'打卡册 · 生成器', d:'冰薄荷笔记本，想要几格造几格', u:'https://welovetigers2010-cloud.github.io/checkin-ledger/'},
+      {n:'LIMONE · 夏日三事', d:'运动 / 专注 / 阅读，连击 Bene！', u:'https://limone-3.netlify.app/'},
+      {n:'向内生长 · Inner', d:'迷彩封面即进度条', u:'https://inner-notes.netlify.app/'},
+    ]},
+    {g:'猎人宇宙', items:[
+      {n:'猎人修行日程 · 念能力者的一天', d:'四大行日程 + 每日水见式', u:'https://star04050405.github.io/hunter/'},
+      {n:'猎人图鉴 · 成长档案', d:'12 角色念能力成长档案', u:'https://star04050405.github.io/nen-dossier/'},
+      {n:'卡册 · 全职猎人 148 集', d:'看一集收一张卡，六篇章徽章', u:'https://welovetigers2010-cloud.github.io/hunter-cardbook/'},
+    ]}
+  ]
+},
+{
+  id:'gym', no:'TIME 03', name:'好看练功场', color:'#E88B8B', img:'img/gym.png',
+  quote:'花在自己身上的每一滴汗，都算数。变好看是练出来的。',
+  groups:[
+    {g:'跟练计划', items:[
+      {n:'PAMELA · 一周跟练', d:'帕梅拉周计划，黑白德系海报风', u:'https://star04050405.github.io/pamela/'},
+      {n:'PAMELA · 经典课库', d:'帕梅拉课程全集，按部位随时查', u:'https://star04050405.github.io/pamela-lib/'},
+      {n:'Reset 56 · 八周重置', d:'100 天计划科学压缩 56 天，粉蓝 bujo', u:'https://welovetigers2010-cloud.github.io/reset56/'},
+      {n:'RESET·30 猛攻计划', d:'30 天精选猛攻，黑底荧光绿 HUD', u:'https://welovetigers2010-cloud.github.io/reset30/'},
+      {n:'REBUILD·60 重建计划', d:'100 节课一节不删，同类合并成 60 天', u:'https://welovetigers2010-cloud.github.io/rebuild60/'},
+      {n:'阿斯汤加练习册', d:'33 体式梵文计数 + 全屏跟练模式', u:'https://welovetigers2010-cloud.github.io/ashtanga/'},
+      {n:'花样瘦身 100 · 自由清零', d:'25 练 × 4 节自由路线，按天解锁不存在', u:'https://star04050405.github.io/huayang/'},
+    ]},
+    {g:'体态专区', items:[
+      {n:'21 天体态重塑', d:'颈肩背体态训练计划', u:'https://welovetigers2010-cloud.github.io/posture21/'},
+      {n:'颈肩背图谱', d:'肌肉 / 动作 / 体态调整速查', u:'https://posture-lab.netlify.app/'},
+    ]},
+    {g:'力量与精致', items:[
+      {n:"IT'S ME · 女子力量俱乐部", d:'HIIT 计时 + 1RM 计算 + 杠铃配重可视化', u:'https://star04050405.github.io/itsme/'},
+      {n:'精致女孩的一天', d:'芭比粉时间轴，六时段点亮', u:'https://welovetigers2010-cloud.github.io/pretty-day/'},
+    ]}
+  ]
+},
+{
+  id:'fun', no:'TIME 05', name:'好玩贩卖机', color:'#B9A3D0', img:'img/fun.png',
+  quote:'不为什么而做的时间，才是纯粹的好玩时间。投币，开抽。',
+  groups:[
+    {g:'追剧现场', items:[
+      {n:'英剧打卡 · 追剧打卡小站', d:'12 部剧库，标记在追/想看/看完，连续打卡', u:'https://star04050405.github.io/telly/'},
+      {n:'JOJO 追剧手账', d:'190 话格子墙，六部制霸星章', u:'https://star04050405.github.io/jojo/'},
+      {n:'better call saul. 63 集', d:'BCS 黄黑广告牌 + 彩蛋格', u:'https://star04050405.github.io/bettercall/'},
+      {n:'花学旅行图鉴 · 花少2', d:'12 站路线 + 花学名场面档案', u:'https://star04050405.github.io/hs2/'},
+      {n:'影视手账', d:'追剧观影逐集打卡，TMDB 数据', u:'https://screen-log2026.netlify.app/'},
+      {n:'电影大师馆', d:'世界著名导演作品全收录', u:'https://cinema-masters.netlify.app/'},
+    ]},
+    {g:'在路上', items:[
+      {n:'意大利旅行图鉴', d:'十城地图 + 路线 + 攻略抽屉', u:'https://star04050405.github.io/italy/'},
+      {n:'山东旅行图鉴', d:'16 城 67 景点 3 条路线', u:'https://star04050405.github.io/shandong/'},
+    ]},
+    {g:'抽卡机', items:[
+      {n:'肯定语贩卖机', d:'投币 gacha，60 句 × 5 口味汽水', u:'https://affirm-vending.netlify.app/'},
+      {n:'能量石工坊', d:'抽能量石 + 首饰穿戴预览', u:'https://crystal-atelier.netlify.app/'},
+      {n:'情绪鸡尾酒 · 调配台', d:'六酒瓶调酒，5 款状态配方', u:'https://emotioncocktail.netlify.app/'},
+      {n:'GAME HUB', d:'675 个游戏库，收藏置顶', u:'https://gamehub2026.netlify.app/'},
+    ]}
+  ]
+},
+{
+  id:'money', no:'TIME 01', name:'赚钱研习社', color:'#2C5F9E', img:'img/money.png',
+  quote:'为想要的生活攒底气的时间。钱是自由的筹码，先从想明白开始。',
+  groups:[
+    {g:'财富课堂', items:[
+      {n:'创富圈十大理论 · NEXUS', d:'十个关于钱的思维模型，赛博霓虹号外风', u:'https://star04050405.github.io/ten-theories/'},
+      {n:'情绪周期 · 交易仪表盘', d:'A 股情绪五档六阶段 + 连板天梯，明日计划', u:'https://moodcycle2026.netlify.app/'},
+    ]}
+  ]
+},
+{
+  id:'cafe', no:'TIME 02', name:'生存咖啡馆', color:'#7FB99F', img:'img/cafe.png',
+  quote:'好好吃饭、好好睡觉、攒够能量——生存时间是所有时间的地基。',
+  groups:[
+    {g:'吃好吃饱', items:[
+      {n:'SUGO · 意面酱研所', d:'13 款经典意面酱 + 「今晚做什么酱」推荐器', u:'https://welovetigers2010-cloud.github.io/sugo/'},
+      {n:'三明治研究所', d:'叠叠乐结构诊断 + 风味配对 + 50 种实拍食材', u:'https://sandwich-lab.netlify.app/'},
+      {n:'地中海食单 · 麦德龙版', d:'抗炎饮食长文案全收录 + 9 类采购清单', u:'https://welovetigers2010-cloud.github.io/metro-medit/'},
+      {n:'MUJI 良品食单', d:'13 分类 39 件休食饮料，60 轮搜图验货', u:'https://star04050405.github.io/muji/'},
+      {n:'香草圣经 · 翻页手账', d:'《DK 香草圣经》100 种香草打卡 + 配方页', u:'https://star04050405.github.io/xiangcao/'},
+      {n:'深夜食堂 · めしや', d:'16 品日式家常，每品一句深夜故事', u:'https://welovetigers2010-cloud.github.io/midnight-diner/'},
+      {n:'深夜食堂 · V2', d:'图片全新版，御注文票照旧', u:'https://welovetigers2010-cloud.github.io/midnight-diner-v2/'},
+      {n:'气泡喫茶店 ソーダ喫茶', d:'昭和喫茶 + 六段时段自动换装', u:'https://welovetigers2010-cloud.github.io/soda-kissa/'},
+      {n:'喫茶 昭和堂', d:'布丁、巴菲、奶油苏打，珈琲の香り', u:'https://welovetigers2010-cloud.github.io/kissa-showado/'},
+      {n:'故事咖啡馆', d:'点单上桌 + 毛绒熊调色 + 古典信纸手记', u:'https://welovetigers2010-cloud.github.io/story-cafe/'},
+    ]},
+    {g:'能量补给', items:[
+      {n:'高能量女孩的一天', d:'每日更新日程，14 天不重样的能量剧本', u:'https://star04050405.github.io/energy/'},
+      {n:'能量发电厂', d:'3B 模型 + 六种物质 + 超新星六周计划', u:'https://powerplant2026.netlify.app/'},
+      {n:'养出高能量 · 速查', d:'全书要点速查 + 每日 9 项充电打卡', u:'https://high-on-energy.netlify.app/'},
+      {n:'六周能量打卡', d:'超新星 / 新星双计划 ×6 周任务墙', u:'https://hoe-6week.netlify.app/'},
+      {n:'能量吧台', d:'两本书装进心里，书架 + 每日三卡', u:'https://energybar2026.netlify.app/'},
+    ]},
+    {g:'睡前安静', items:[
+      {n:'静界 · 冥想空间', d:'深夜场景 + 呼吸引导环 + 程序化环境音', u:'https://zen-space2026.netlify.app/'},
+      {n:'冥想室', d:'二十个可以进去的房间，CG 光线', u:'https://welovetigers2010-cloud.github.io/meditation/'},
+      {n:'五间房 · Quiet Rooms', d:'五扇拱门：呼吸 / 专注 / 睡眠 / 清晨 / 身体', u:'https://welovetigers2010-cloud.github.io/quiet-rooms/'},
+      {n:'倒空 · Brain Detox', d:'深夜 brain dump，气泡放掉不留痕', u:'https://welovetigers2010-cloud.github.io/brain-detox/'},
+    ]},
+    {g:'今日日程', items:[
+      {n:'day. 我的一天', d:'正向生活 47 项习惯库，fabulous 式时间轴', u:'https://star04050405.github.io/myday/'},
+    ]}
+  ]
+}
+];
+
+
+// ---------- engine ----------
+const $=s=>document.querySelector(s);
+const TOT = MAP.reduce((a,c)=>a+c.groups.reduce((x,g)=>x+g.items.length,0),0);
+$('#tot').textContent=TOT;
+$('#ftn').textContent=TOT+' SITES';
+$('#pins').innerHTML=MAP.map(m=>'<span class="pin" style="background:'+m.color+'"></span>').join('');
+
+const rows=['r1','r2','r3','r4','r5'];
+$('#blocks').innerHTML=MAP.map((m,i)=>
+  '<div class="row '+rows[i]+'"><button class="bld" data-id="'+m.id+'" aria-label="'+m.name+'">'+
+    '<img src="'+m.img+'" alt="'+m.name+'" loading="lazy"></button></div>').join('');
+
+const blds=[...document.querySelectorAll('.bld')];
+const io=new IntersectionObserver(es=>es.forEach((e,idx)=>{
+  if(e.isIntersecting){setTimeout(()=>e.target.classList.add('in'), idx*90);io.unobserve(e.target);}
+}),{threshold:.1});
+blds.forEach(b=>io.observe(b));
+
+function host(u){try{return new URL(u).hostname.replace('.github.io','').replace('.netlify.app','')}catch(e){return ''}}
+
+let cur=null, opening=false;
+function openCat(id){
+  const m=MAP.find(x=>x.id===id); if(!m)return;
+  cur=id;
+  $('#cbT').textContent=m.name;
+  const total=m.groups.reduce((a,g)=>a+g.items.length,0);
+  $('#cbN').textContent=total+' sites';
+  let k=0;
+  $('#catBody').innerHTML=
+   '<div class="cather" style="--c:'+m.color+'">'+
+     '<div class="c-no">'+m.no+'</div>'+
+     '<h2>'+m.name+'</h2>'+
+     '<div class="c-quote">'+m.quote+'</div>'+
+     '<div class="c-line"></div>'+
+   '</div>'+
+   m.groups.map(g=>
+     '<div class="gtitle">'+g.g+'<span class="gn">'+g.items.length+'</span></div>'+
+     g.items.map(it=>{k++;return (
+     '<a class="st" style="--c:'+m.color+';animation-delay:'+Math.min(k*35,600)+'ms" href="'+it.u+'" target="_blank" rel="noopener">'+
+       '<span class="dot"></span>'+
+       '<span class="tx"><span class="nm">'+it.n+'</span><span class="ds">'+it.d+'</span></span>'+
+       '<span class="go"><span class="dm">'+host(it.u)+'</span><span class="ar">&#8599;</span></span>'+
+     '</a>')}).join('')
+   ).join('')+'<div class="catfoot">'+m.name+' · '+total+' sites</div>';
+  $('#cat').classList.add('open');
+  $('#cat').scrollTop=0;
+  opening=true; location.hash=id; setTimeout(()=>opening=false,0);
+}
+function closeCat(){
+  cur=null; $('#cat').classList.remove('open');
+  if(location.hash){opening=true; history.pushState('',document.title,location.pathname); setTimeout(()=>opening=false,0);}
+}
+document.querySelectorAll('.bld').forEach(b=>b.addEventListener('click',()=>openCat(b.dataset.id)));
+$('#bk').addEventListener('click',closeCat);
+window.addEventListener('hashchange',()=>{
+  if(opening)return;
+  const id=location.hash.slice(1);
+  if(MAP.some(m=>m.id===id)&&cur!==id)openCat(id);
+  else if(!location.hash)closeCat();
+});
+
+// ---------- 搜索 ----------
+const sinput=document.getElementById('sinput'), sclear=document.getElementById('sclear'), sres=document.getElementById('sres');
+let stimer=null;
+function esc(s){return s.replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]))}
+function hi(text,q){
+  const i=text.toLowerCase().indexOf(q);
+  if(i<0)return esc(text);
+  return esc(text.slice(0,i))+'<mark>'+esc(text.slice(i,i+q.length))+'</mark>'+esc(text.slice(i+q.length));
+}
+function doSearch(){
+  const q=sinput.value.trim().toLowerCase();
+  sclear.classList.toggle('show', !!q);
+  if(!q){
+    sres.classList.remove('show'); sres.innerHTML='';
+    document.getElementById('blocks').style.display='';
+    document.querySelector('.hint').style.display='';
+    return;
+  }
+  const hits=[];
+  MAP.forEach(m=>m.groups.forEach(g=>g.items.forEach(it=>{
+    if((it.n+' '+it.d+' '+g.g+' '+m.name).toLowerCase().includes(q))
+      hits.push({m,g,it});
+  })));
+  document.getElementById('blocks').style.display='none';
+  document.querySelector('.hint').style.display='none';
+  if(!hits.length){
+    sres.innerHTML='<div class="snone"><b>没有找到「'+esc(sinput.value.trim())+'」</b>试试：钢琴 · 帕梅拉 · 庄子 · 追剧 · 手账 · 冥想</div>';
+  } else {
+    const floors=[...new Set(hits.map(x=>x.m.name))].join(' · ');
+    sres.innerHTML=
+      '<div class="scount">找到 <b>'+hits.length+'</b> 个 · '+esc(floors)+'</div>'+
+      hits.map(x=>
+        '<a class="sr" style="--c:'+x.m.color+'" href="'+x.it.u+'" target="_blank" rel="noopener">'+
+        '<span class="dot" style="background:'+x.m.color+'"></span>'+
+        '<span class="tx"><span class="fl" style="color:'+x.m.color+'">'+esc(x.m.name)+' · '+esc(x.g.g)+'</span>'+
+        '<span class="nm">'+hi(x.it.n,q)+'</span><span class="ds">'+esc(x.it.d)+'</span></span>'+
+        '<span class="go"><span class="ar">&#8599;</span></span></a>').join('');
+  }
+  sres.classList.add('show');
+}
+sinput.addEventListener('input',()=>{clearTimeout(stimer);stimer=setTimeout(doSearch,110)});
+sclear.addEventListener('click',()=>{sinput.value='';doSearch();sinput.focus()});
+sinput.addEventListener('keydown',e=>{if(e.key==='Enter'){e.preventDefault();sinput.blur();}});
+if(location.hash){const id=location.hash.slice(1);if(MAP.some(m=>m.id===id))setTimeout(()=>openCat(id),120);}
+
+</script>
+</body>
+</html>
